@@ -1,0 +1,9 @@
+{
+	"background_color": "#ffffff",
+	"display": "standalone",
+	"icons": [],
+	"name": "Deliveries",
+	"short_name": "Deliveries",
+	"start_url": ".",
+	"theme_color": "#000000"
+}
