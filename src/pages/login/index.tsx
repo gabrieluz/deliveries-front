@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import { toast } from 'react-toastify';
 
+import { FormikValues } from 'formik';
 import * as Yup from 'yup';
 
-import { FormikValues } from 'formik';
-import { CreateUser } from '../../services/api';
+import { UserContext } from '../../context/userContext';
+
 import { FormContainer } from '../../components/form';
+
+import { Login as apiLogin } from '../../services/api';
 
 import * as S from './styled';
 
@@ -15,7 +18,8 @@ const validationSchema = Yup.object().shape({
 	password: Yup.string().required(),
 });
 
-function Register() {
+function Login() {
+	const { user, setUser } = useContext(UserContext);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const initialValues = { isDeliveryman: false, username: '', password: '' };
@@ -24,16 +28,21 @@ function Register() {
 		setIsLoading(true);
 
 		const { username, password, isDeliveryman } = e;
-
-		CreateUser({ username, password }, isDeliveryman)
+		apiLogin({ username, password }, isDeliveryman)
 			.then(res => {
 				toast.success(res.data.message);
-				toast.info('Redirecionando para login');
-				setTimeout(() => {
-					window.location.href = '/login';
-				}, 3000);
+				toast.info('Redirecionando para dashboard');
+
+				setUser({
+					token: res.data.token,
+					data: {},
+				});
+				// setTimeout(() => {
+				// 	window.location.href = '/login';
+				// }, 3000);
 			})
 			.catch(err => {
+				console.log(err);
 				toast.error(err.response.data.message);
 			})
 			.finally(() => {
@@ -48,8 +57,8 @@ function Register() {
 				onSubmit={submit}
 				validationSchema={validationSchema}
 			>
-				{({ handleChange, handleSubmit, isValid }) => (
-					<FormContainer pageTitle='Cadastro'>
+				{({ handleChange, handleSubmit, isValid, errors }) => (
+					<FormContainer pageTitle='Login'>
 						<S.FormContent>
 							<S.Input
 								id='username'
@@ -79,7 +88,7 @@ function Register() {
 							onClick={() => handleSubmit()}
 							disabled={!isValid || isLoading}
 							isLoading={isLoading}
-							label='Cadastrar'
+							label='Login'
 						/>
 					</FormContainer>
 				)}
@@ -88,4 +97,4 @@ function Register() {
 	);
 }
 
-export { Register };
+export { Login };

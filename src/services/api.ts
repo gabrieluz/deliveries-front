@@ -10,15 +10,26 @@ const app = axios.create({
 	headers: { 'Content-Type': 'application/json' },
 });
 
-export async function CreateClient({ username, password }: ICreateClient) {
-	const data = await app
-		.post('/client', { username, password })
-		.then(res => {
-			return res.data;
-		})
-		.catch(err => {
-			return err;
-		});
+export async function CreateUser(
+	{ username, password }: ICreateClient,
+	isDeliveryman: boolean
+) {
+	const data = await app.post(`${isDeliveryman ? '/deliveryman' : '/client'}`, {
+		username,
+		password,
+	});
+
+	return data;
+}
+
+export async function Login(
+	{ username, password }: ICreateClient,
+	isDeliveryman: boolean
+) {
+	const data = await app.post(
+		`${isDeliveryman ? '/deliveryman' : '/client'}/authenticate/`,
+		{ username, password }
+	);
 
 	return data;
 }
